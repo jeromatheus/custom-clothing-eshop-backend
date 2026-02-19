@@ -3,16 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\Usuario\\Desktop\\repos\\custom-clothing-eshop-backend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{EAB680D4-1F6C-4D7A-96F9-D20F2090C0A8}|Api\\Api.csproj|c:\\users\\usuario\\desktop\\repos\\custom-clothing-eshop-backend\\api\\features\\purchase\\features\\getproductvariableattributes\\getupdatedattributeshandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EAB680D4-1F6C-4D7A-96F9-D20F2090C0A8}|Api\\Api.csproj|solutionrelative:api\\features\\purchase\\features\\getproductvariableattributes\\getupdatedattributeshandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{EAB680D4-1F6C-4D7A-96F9-D20F2090C0A8}|Api\\Api.csproj|c:\\users\\usuario\\desktop\\repos\\custom-clothing-eshop-backend\\api\\features\\purchase\\features\\getproductvariableattributes\\getupdatedattributesendpoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EAB680D4-1F6C-4D7A-96F9-D20F2090C0A8}|Api\\Api.csproj|solutionrelative:api\\features\\purchase\\features\\getproductvariableattributes\\getupdatedattributesendpoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{EAB680D4-1F6C-4D7A-96F9-D20F2090C0A8}|Api\\Api.csproj|c:\\users\\usuario\\desktop\\repos\\custom-clothing-eshop-backend\\api\\features\\purchase\\dtos\\updatedattributesdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EAB680D4-1F6C-4D7A-96F9-D20F2090C0A8}|Api\\Api.csproj|solutionrelative:api\\features\\purchase\\dtos\\updatedattributesdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{EAB680D4-1F6C-4D7A-96F9-D20F2090C0A8}|Api\\Api.csproj|c:\\users\\usuario\\desktop\\repos\\custom-clothing-eshop-backend\\api\\features\\catalog\\features\\getproductvariantdetailbyid\\getproductvariantdetailbyidhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EAB680D4-1F6C-4D7A-96F9-D20F2090C0A8}|Api\\Api.csproj|solutionrelative:api\\features\\catalog\\features\\getproductvariantdetailbyid\\getproductvariantdetailbyidhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,45 +14,19 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "GetUpdatedAttributesEndpoint.cs",
-              "DocumentMoniker": "C:\\Users\\Usuario\\Desktop\\repos\\custom-clothing-eshop-backend\\Api\\Features\\Purchase\\Features\\GetProductVariableAttributes\\GetUpdatedAttributesEndpoint.cs",
-              "RelativeDocumentMoniker": "Api\\Features\\Purchase\\Features\\GetProductVariableAttributes\\GetUpdatedAttributesEndpoint.cs",
-              "ToolTip": "C:\\Users\\Usuario\\Desktop\\repos\\custom-clothing-eshop-backend\\Api\\Features\\Purchase\\Features\\GetProductVariableAttributes\\GetUpdatedAttributesEndpoint.cs",
-              "RelativeToolTip": "Api\\Features\\Purchase\\Features\\GetProductVariableAttributes\\GetUpdatedAttributesEndpoint.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAA/AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-19T19:49:41.537Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "GetUpdatedAttributesHandler.cs",
-              "DocumentMoniker": "C:\\Users\\Usuario\\Desktop\\repos\\custom-clothing-eshop-backend\\Api\\Features\\Purchase\\Features\\GetProductVariableAttributes\\GetUpdatedAttributesHandler.cs",
-              "RelativeDocumentMoniker": "Api\\Features\\Purchase\\Features\\GetProductVariableAttributes\\GetUpdatedAttributesHandler.cs",
-              "ToolTip": "C:\\Users\\Usuario\\Desktop\\repos\\custom-clothing-eshop-backend\\Api\\Features\\Purchase\\Features\\GetProductVariableAttributes\\GetUpdatedAttributesHandler.cs",
-              "RelativeToolTip": "Api\\Features\\Purchase\\Features\\GetProductVariableAttributes\\GetUpdatedAttributesHandler.cs",
-              "ViewState": "AgIAACAAAAAAAAAAAAAIwDgAAAA/AAAAAAAAAA==",
+              "Title": "GetProductVariantDetailByIdHandler.cs",
+              "DocumentMoniker": "C:\\Users\\Usuario\\Desktop\\repos\\custom-clothing-eshop-backend\\Api\\Features\\Catalog\\Features\\GetProductVariantDetailById\\GetProductVariantDetailByIdHandler.cs",
+              "RelativeDocumentMoniker": "Api\\Features\\Catalog\\Features\\GetProductVariantDetailById\\GetProductVariantDetailByIdHandler.cs",
+              "ToolTip": "C:\\Users\\Usuario\\Desktop\\repos\\custom-clothing-eshop-backend\\Api\\Features\\Catalog\\Features\\GetProductVariantDetailById\\GetProductVariantDetailByIdHandler.cs",
+              "RelativeToolTip": "Api\\Features\\Catalog\\Features\\GetProductVariantDetailById\\GetProductVariantDetailByIdHandler.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAQwEoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-19T19:49:40.774Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "UpdatedAttributesDto.cs",
-              "DocumentMoniker": "C:\\Users\\Usuario\\Desktop\\repos\\custom-clothing-eshop-backend\\Api\\Features\\Purchase\\Dtos\\UpdatedAttributesDto.cs",
-              "RelativeDocumentMoniker": "Api\\Features\\Purchase\\Dtos\\UpdatedAttributesDto.cs",
-              "ToolTip": "C:\\Users\\Usuario\\Desktop\\repos\\custom-clothing-eshop-backend\\Api\\Features\\Purchase\\Dtos\\UpdatedAttributesDto.cs",
-              "RelativeToolTip": "Api\\Features\\Purchase\\Dtos\\UpdatedAttributesDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-19T19:43:43.703Z",
+              "WhenOpened": "2026-02-19T22:15:17.843Z",
               "EditorCaption": ""
             }
           ]

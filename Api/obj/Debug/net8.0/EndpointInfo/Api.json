@@ -10,7 +10,7 @@
         "tags": [
           "Catalog"
         ],
-        "summary": "Obtener producto por Id",
+        "summary": "Obtener los detalles completos de un producto por Id y Color",
         "operationId": "GetProductById",
         "parameters": [
           {
@@ -25,7 +25,85 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProductVariantDetailByIdResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/attributes": {
+      "get": {
+        "tags": [
+          "Catalog"
+        ],
+        "summary": "Obtener detalles, stock y fotos por combinación de atributos",
+        "operationId": "GetProductByAttributes",
+        "parameters": [
+          {
+            "name": "Garment",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Neck",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Fit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Material",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Warmth",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductVariantDetailDto"
+                }
+              }
+            }
           },
           "404": {
             "description": "Not Found"
@@ -56,7 +134,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GetSimilarProductsByTypeResponse"
+                  "$ref": "#/components/schemas/GetFeaturedProductVariantsByTypeResponse"
                 }
               }
             }
@@ -77,13 +155,130 @@
   },
   "components": {
     "schemas": {
-      "GetSimilarProductsByTypeResponse": {
+      "ColorVariantDto": {
+        "type": "object",
+        "properties": {
+          "variantId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "colorName": {
+            "type": "string",
+            "nullable": true
+          },
+          "sizes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SizeStockDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ColorVariantSummaryDto": {
+        "type": "object",
+        "properties": {
+          "variantId": {
+            "type": "string",
+            "nullable": true
+          },
+          "colorName": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FeaturedProductVariantDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "mainImageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasStock": {
+            "type": "boolean"
+          },
+          "colors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ColorVariantSummaryDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetFeaturedProductVariantsByTypeResponse": {
         "type": "object",
         "properties": {
           "products": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SimilarProductDto"
+              "$ref": "#/components/schemas/FeaturedProductVariantDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetProductVariantDetailByIdResponse": {
+        "type": "object",
+        "properties": {
+          "product": {
+            "$ref": "#/components/schemas/ProductVariantDetailDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModelDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "colorName": {
+            "type": "string",
+            "nullable": true
+          },
+          "heightInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "sizeInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "carouselImages": {
+            "type": "array",
+            "items": {
+              "type": "string"
             },
             "nullable": true
           }
@@ -117,12 +312,12 @@
         },
         "additionalProperties": { }
       },
-      "SimilarProductDto": {
+      "ProductVariantDetailDto": {
         "type": "object",
         "properties": {
-          "sku": {
+          "id": {
             "type": "string",
-            "nullable": true
+            "format": "uuid"
           },
           "name": {
             "type": "string",
@@ -132,19 +327,82 @@
             "type": "number",
             "format": "double"
           },
-          "mainImageUrl": {
+          "garmentType": {
             "type": "string",
             "nullable": true
           },
-          "availableColors": {
+          "neckType": {
+            "type": "string",
+            "nullable": true
+          },
+          "fitType": {
+            "type": "string",
+            "nullable": true
+          },
+          "materialType": {
+            "type": "string",
+            "nullable": true
+          },
+          "warmthLevel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sizeChart": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/SizeSpecDto"
             },
             "nullable": true
           },
-          "hasStock": {
-            "type": "boolean"
+          "variants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ColorVariantDto"
+            },
+            "nullable": true
+          },
+          "models": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModelDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SizeSpecDto": {
+        "type": "object",
+        "properties": {
+          "size": {
+            "type": "string",
+            "nullable": true
+          },
+          "chest": {
+            "type": "number",
+            "format": "double"
+          },
+          "length": {
+            "type": "number",
+            "format": "double"
+          },
+          "neck": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SizeStockDto": {
+        "type": "object",
+        "properties": {
+          "size": {
+            "type": "string",
+            "nullable": true
+          },
+          "stock": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false

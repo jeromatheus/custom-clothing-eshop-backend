@@ -1,4 +1,4 @@
-﻿using Api.Model;
+﻿using Api.Models; // Asegúrate de que apunte a tu namespace correcto
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Database;
@@ -12,8 +12,9 @@ public class AppDbContext : DbContext
     // =========================================================
     // DBSETS (Tablas)
     // =========================================================
-    public DbSet<FixedAttribute> FixedAttributes { get; set; }
-    public DbSet<VariableAttribute> VariableAttributes { get; set; }
+    public DbSet<Product> Products { get; set; }
+    public DbSet<Variant> Variants { get; set; }
+    public DbSet<SizeMeasurement> SizeMeasurements { get; set; }
     public DbSet<StockItem> StockItems { get; set; }
     public DbSet<ImageGroup> ImageGroups { get; set; }
     public DbSet<Image> Images { get; set; }
@@ -23,37 +24,45 @@ public class AppDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         // =========================================================
-        // 1. FIXED ATTRIBUTE (PRODUCTO BASE)
+        // 1. PRODUCT (PRODUCTO BASE)
         // =========================================================
-        modelBuilder.Entity<FixedAttribute>(entity =>
+        modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(f => f.Id);
+            entity.HasKey(p => p.Id);
 
-            entity.Property(f => f.Garment).HasConversion<string>().HasMaxLength(50);
-            entity.Property(f => f.Material).HasConversion<string>().HasMaxLength(50);
-            entity.Property(f => f.Neck).HasConversion<string>().HasMaxLength(50);
-            entity.Property(f => f.Fit).HasConversion<string>().HasMaxLength(50);
-            entity.Property(f => f.WarmthLevel).HasConversion<string>().HasMaxLength(50);
-            entity.Property(f => f.WarmthLevel);
+            // Enums a String
+            entity.Property(p => p.Garment).HasConversion<string>().HasMaxLength(50);
+            entity.Property(p => p.Material).HasConversion<string>().HasMaxLength(50);
+            entity.Property(p => p.Neck).HasConversion<string>().HasMaxLength(50);
+            entity.Property(p => p.Fit).HasConversion<string>().HasMaxLength(50);
+            entity.Property(p => p.Warmth).HasConversion<string>().HasMaxLength(50);    // TODO
 
-            entity.HasMany(f => f.VariableAttributes)
-                  .WithOne(v => v.FixedAttribute)
-                  .HasForeignKey(v => v.FixedAttributeId)
+            // Relación: Product 1 -> N Variants
+            entity.HasMany(p => p.Variants)
+                  .WithOne(v => v.Product)
+                  .HasForeignKey(v => v.ProductId)
                   .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasIndex(f => new { f.Garment, f.Material, f.Neck, f.Fit })
+            // Relación: Product 1 -> N SizeMeasurements (Tabla de talles general)
+            entity.HasMany(p => p.SizeMeasurements)
+                  .WithOne(s => s.Product)
+                  .HasForeignKey(s => s.ProductId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            // Índice para no repetir exactamente el mismo producto base
+            entity.HasIndex(p => new { p.Garment, p.Material, p.Neck, p.Fit })
                   .IsUnique();
 
-            entity.Property(f => f.Price)
-                  .HasColumnType("decimal(18,2)") 
+            entity.Property(p => p.Price)
+                  .HasColumnType("decimal(18,2)")
                   .HasDefaultValue(0)
                   .IsRequired();
         });
 
         // =========================================================
-        // 2. VARIABLE ATTRIBUTE (COLOR)
+        // 2. VARIANT (COLOR / ARTÍCULO FÍSICO)
         // =========================================================
-        modelBuilder.Entity<VariableAttribute>(entity =>
+        modelBuilder.Entity<Variant>(entity =>
         {
             entity.HasKey(v => v.Id);
 
@@ -61,22 +70,41 @@ public class AppDbContext : DbContext
                   .HasConversion<string>()
                   .HasMaxLength(50);
 
-            entity.HasIndex(v => new { v.FixedAttributeId, v.Color })
+            // Índice: No puede haber dos variantes del mismo color para el mismo producto base
+            entity.HasIndex(v => new { v.ProductId, v.Color })
                   .IsUnique();
 
+            // Relación: Variant 1 -> N StockItems
             entity.HasMany(v => v.StockItems)
-                  .WithOne(s => s.VariableAttribute)
-                  .HasForeignKey(s => s.VariableAttributeId)
+                  .WithOne(s => s.Variant)
+                  .HasForeignKey(s => s.VariantId)
                   .OnDelete(DeleteBehavior.Cascade);
 
+            // Relación: Variant 1 -> N ImageGroups
             entity.HasMany(v => v.ImageGroups)
-                  .WithOne(g => g.VariableAttribute)
-                  .HasForeignKey(g => g.VariableAttributeId)
+                  .WithOne(g => g.Variant)
+                  .HasForeignKey(g => g.VariantId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
         // =========================================================
-        // 3. STOCK ITEM (SIZE + CANTIDAD)
+        // 3. SIZE MEASUREMENT (MEDIDAS / GUÍA DE TALLES)
+        // =========================================================
+        modelBuilder.Entity<SizeMeasurement>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+
+            entity.Property(s => s.Size)
+                  .HasConversion<string>()
+                  .HasMaxLength(20);
+
+            // Índice: No se pueden repetir medidas para el mismo talle en un mismo producto
+            entity.HasIndex(s => new { s.ProductId, s.Size })
+                  .IsUnique();
+        });
+
+        // =========================================================
+        // 4. STOCK ITEM (INVENTARIO)
         // =========================================================
         modelBuilder.Entity<StockItem>(entity =>
         {
@@ -86,12 +114,13 @@ public class AppDbContext : DbContext
                   .HasConversion<string>()
                   .HasMaxLength(20);
 
-            entity.HasIndex(s => new { s.VariableAttributeId, s.Size })
+            // Índice: Una variante solo puede tener un registro de stock por talle
+            entity.HasIndex(s => new { s.VariantId, s.Size })
                   .IsUnique();
         });
 
         // =========================================================
-        // 4. IMAGE GROUP
+        // 5. IMAGE GROUP (GRUPO DE IMÁGENES)
         // =========================================================
         modelBuilder.Entity<ImageGroup>(entity =>
         {
@@ -101,6 +130,7 @@ public class AppDbContext : DbContext
                   .HasConversion<string>()
                   .HasMaxLength(20);
 
+            // Relación: ImageGroup 1 -> N Images
             entity.HasMany(g => g.Images)
                   .WithOne(i => i.ImageGroup)
                   .HasForeignKey(i => i.ImageGroupId)
@@ -108,7 +138,7 @@ public class AppDbContext : DbContext
         });
 
         // =========================================================
-        // 5. IMAGE
+        // 6. IMAGE (FOTO REAL)
         // =========================================================
         modelBuilder.Entity<Image>(entity =>
         {

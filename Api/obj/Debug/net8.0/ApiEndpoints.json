@@ -1,6 +1,6 @@
 [
   {
-    "ContainingType": "Api.Features.Purchase.Features.GetProductById.GetProductByIdEndpoint\u002B\u003C\u003Ec",
+    "ContainingType": "Api.Features.Catalog.Features.GetProductVariantDetailById.GetProductByIdEndpoint\u002B\u003C\u003Ec",
     "Method": "\u003CAddRoutes\u003Eb__0_0",
     "RelativePath": "products/{id:guid}",
     "HttpMethod": "GET",
@@ -15,8 +15,71 @@
     ],
     "ReturnTypes": [
       {
+        "Type": "Api.Features.Catalog.Features.GetProductVariantDetailById.GetProductVariantDetailByIdResponse",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      },
+      {
         "Type": "System.Void",
         "MediaTypes": [],
+        "StatusCode": 404
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "application/problem\u002Bjson"
+        ],
+        "StatusCode": 400
+      }
+    ],
+    "Tags": [
+      "Catalog"
+    ],
+    "EndpointName": "GetProductById",
+    "Summary": "Obtener los detalles completos de un producto por Id y Color"
+  },
+  {
+    "ContainingType": "Api.Features.Catalog.Features.GetFeaturedProductsByType.GetProductByAttributesEndpoint\u002B\u003C\u003Ec",
+    "Method": "\u003CAddRoutes\u003Eb__0_0",
+    "RelativePath": "products/attributes",
+    "HttpMethod": "GET",
+    "IsController": false,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Garment",
+        "Type": "System.Nullable\u00601[[Api.Models.Enums.Garment, Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Neck",
+        "Type": "System.Nullable\u00601[[Api.Models.Enums.Neck, Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Fit",
+        "Type": "System.Nullable\u00601[[Api.Models.Enums.Fit, Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Material",
+        "Type": "System.Nullable\u00601[[Api.Models.Enums.Material, Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Warmth",
+        "Type": "System.Nullable\u00601[[Api.Models.Enums.Warmth, Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Api.Features.Catalog.Dtos.ProductVariantDetailDto",
+        "MediaTypes": [
+          "application/json"
+        ],
         "StatusCode": 200
       },
       {
@@ -28,11 +91,11 @@
     "Tags": [
       "Catalog"
     ],
-    "EndpointName": "GetProductById",
-    "Summary": "Obtener producto por Id"
+    "EndpointName": "GetProductByAttributes",
+    "Summary": "Obtener detalles, stock y fotos por combinaci\u00F3n de atributos"
   },
   {
-    "ContainingType": "Api.Features.Catalog.Features.GetSimilarProductsByType.GetSimilarProductsByTypeEndpoint\u002B\u003C\u003Ec",
+    "ContainingType": "Api.Features.Catalog.Features.GetFeaturedProductVariantsByType.GetFeaturedProductVariantsByTypeEndpoint\u002B\u003C\u003Ec",
     "Method": "\u003CAddRoutes\u003Eb__0_0",
     "RelativePath": "products/type/{productType}",
     "HttpMethod": "GET",
@@ -41,13 +104,13 @@
     "Parameters": [
       {
         "Name": "productType",
-        "Type": "Garment",
+        "Type": "Api.Models.Enums.Garment",
         "IsRequired": true
       }
     ],
     "ReturnTypes": [
       {
-        "Type": "Api.Features.Catalog.Features.GetSimilarProductsByType.GetSimilarProductsByTypeResponse",
+        "Type": "Api.Features.Catalog.Features.GetFeaturedProductVariantsByType.GetFeaturedProductVariantsByTypeResponse",
         "MediaTypes": [
           "application/json"
         ],
