@@ -18,12 +18,18 @@
         "Type": "System.Void",
         "MediaTypes": [],
         "StatusCode": 200
+      },
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 404
       }
     ],
     "Tags": [
       "Catalog"
     ],
-    "EndpointName": "GetProductById"
+    "EndpointName": "GetProductById",
+    "Summary": "Obtener producto por Id"
   },
   {
     "ContainingType": "Api.Features.Catalog.Features.GetSimilarProductsByType.GetSimilarProductsByTypeEndpoint\u002B\u003C\u003Ec",
@@ -35,7 +41,7 @@
     "Parameters": [
       {
         "Name": "productType",
-        "Type": "System.String",
+        "Type": "Garment",
         "IsRequired": true
       }
     ],
@@ -59,6 +65,6 @@
       "Catalog"
     ],
     "EndpointName": "GetProductsByType",
-    "Summary": "Obtener productos por categor\u00EDa"
+    "Summary": "Obtener productos por tipo de prenda"
   }
 ]

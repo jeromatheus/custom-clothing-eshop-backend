@@ -10,6 +10,7 @@
         "tags": [
           "Catalog"
         ],
+        "summary": "Obtener producto por Id",
         "operationId": "GetProductById",
         "parameters": [
           {
@@ -25,6 +26,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -34,7 +38,7 @@
         "tags": [
           "Catalog"
         ],
-        "summary": "Obtener productos por categoría",
+        "summary": "Obtener productos por tipo de prenda",
         "operationId": "GetProductsByType",
         "parameters": [
           {
@@ -79,7 +83,7 @@
           "products": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ProductDto"
+              "$ref": "#/components/schemas/SimilarProductDto"
             },
             "nullable": true
           }
@@ -113,18 +117,14 @@
         },
         "additionalProperties": { }
       },
-      "ProductDto": {
+      "SimilarProductDto": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
+          "sku": {
             "type": "string",
             "nullable": true
           },
-          "sku": {
+          "name": {
             "type": "string",
             "nullable": true
           },

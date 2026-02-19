@@ -1,16 +1,19 @@
 ﻿using Api.Database;
-using Api.Extensions;
 using Api.Features.Catalog.Dtos;
-using Api.Features.Purchase.Models.Enums;
+using Api.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Features.Catalog.Features.GetSimilarProductsByType;
 
-public record GetSimilarProductsByTypeQuery(string ProductType) : IRequest<GetSimilarProductsByTypeResult>;
-public record GetSimilarProductsByTypeResult(IEnumerable<ProductDto> Products);
+public record GetSimilarProductsByTypeQuery(Garment ProductType)
+    : IRequest<GetSimilarProductsByTypeResult>;
 
-public class GetSimilarProductsByTypeHandler : IRequestHandler<GetSimilarProductsByTypeQuery, GetSimilarProductsByTypeResult>
+public record GetSimilarProductsByTypeResult(
+    IEnumerable<SimilarProductDto> Products);
+
+public class GetSimilarProductsByTypeHandler
+    : IRequestHandler<GetSimilarProductsByTypeQuery, GetSimilarProductsByTypeResult>
 {
     private readonly AppDbContext _context;
 
@@ -19,46 +22,38 @@ public class GetSimilarProductsByTypeHandler : IRequestHandler<GetSimilarProduct
         _context = context;
     }
 
-    public async Task<GetSimilarProductsByTypeResult> Handle(GetSimilarProductsByTypeQuery query, CancellationToken cancellationToken)
+    public async Task<GetSimilarProductsByTypeResult> Handle(
+        GetSimilarProductsByTypeQuery query,
+        CancellationToken cancellationToken)
     {
-        // 1. Validación del Enum
-        if (!Enum.TryParse<ProductType>(query.ProductType, true, out var typeEnum))
-        {
-            throw new ArgumentException($"El tipo '{query.ProductType}' no es válido.");
-        }
+        var products = await _context.FixedAttributes
+            .AsNoTracking()
+            .Where(f => f.Garment == query.ProductType)
+            .Select(f => new SimilarProductDto
+            {
+                Sku = f.Id.ToString(), // TODO
+                Name = f.GetFullName(),
+                Price = f.Price,
 
-        // 2. Consulta a BD (AGREGAMOS .Include(Variants))
-        var products = await _context.Products
-            .Include(p => p.Variants)
-            .Include(p => p.ImageGroups)
-            .ThenInclude(g => g.Images)
-            .Include(p => p.Variants) 
-            .Where(p => p.Type == typeEnum)
+                MainImageUrl = f.VariableAttributes
+                    .SelectMany(v => v.ImageGroups)
+                    .SelectMany(g => g.Images)
+                    .OrderByDescending(i => i.IsMain)
+                    .Select(i => i.ImageUrl)
+                    .FirstOrDefault()
+                        ?? "https://via.placeholder.com/150",
+
+                AvailableColors = f.VariableAttributes
+                    .Where(v => v.StockItems.Any(s => s.Quantity > 0))
+                    .Select(v => v.Color.ToString())
+                    .Distinct()
+                    .ToList(),
+
+                HasStock = f.VariableAttributes
+                    .Any(v => v.StockItems.Any(s => s.Quantity > 0))
+            })
             .ToListAsync(cancellationToken);
 
-        // 3. Mapeo
-        var productDtos = products.Select(p => new ProductDto
-        {
-            Id = p.Id,
-            Name = p.Type.ToFriendlyName(),
-            Sku = p.Sku,
-            Price = p.Price,
-
-            MainImageUrl = p.ImageGroups
-                .SelectMany(g => g.Images)
-                .OrderByDescending(i => i.IsMain)
-                .FirstOrDefault()?.ImageUrl
-                ?? "https://via.placeholder.com/150",
-
-            AvailableColors = p.Variants
-                .Where(v => v.Stock > 0)
-                .Select(v => v.Color.ToString())
-                .Distinct() // Elimina los talles implícitamente (Rojo S y Rojo M)
-                .ToList(),
-
-            HasStock = p.Variants.Any(v => v.Stock > 0) // TODO: cómo manejo si un color si tiene stock pero otro no
-        });
-
-        return new GetSimilarProductsByTypeResult(productDtos);
+        return new GetSimilarProductsByTypeResult(products);
     }
 }

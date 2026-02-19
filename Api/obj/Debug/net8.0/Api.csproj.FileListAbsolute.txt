@@ -151,4 +151,5 @@ C:\Users\Usuario\Desktop\repos\custom-clothing-eshop-backend\Api\obj\Debug\net8.
 C:\Users\Usuario\Desktop\repos\custom-clothing-eshop-backend\Api\obj\Debug\net8.0\Api.pdb
 C:\Users\Usuario\Desktop\repos\custom-clothing-eshop-backend\Api\obj\Debug\net8.0\Api.genruntimeconfig.cache
 C:\Users\Usuario\Desktop\repos\custom-clothing-eshop-backend\Api\obj\Debug\net8.0\ref\Api.dll
+C:\Users\Usuario\Desktop\repos\custom-clothing-eshop-backend\api\obj\Debug\net8.0\Api.sourcelink.json
 C:\Users\Usuario\Desktop\repos\custom-clothing-eshop-backend\Api\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

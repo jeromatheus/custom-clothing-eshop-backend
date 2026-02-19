@@ -1,5 +1,4 @@
-﻿using Api.Features.Catalog.Models;
-using Api.Features.Purchase.Models;
+﻿using Api.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Database;
@@ -10,110 +9,117 @@ public class AppDbContext : DbContext
     {
     }
 
-    // --- DbSets (Tablas) ---
-    public DbSet<Product> Products => Set<Product>();
-    public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
-    public DbSet<ProductImageGroup> ProductImageGroups => Set<ProductImageGroup>();
-    public DbSet<ProductImage> ProductImages => Set<ProductImage>();
-    public DbSet<ProductMeasurement> ProductMeasurements => Set<ProductMeasurement>();
+    // =========================================================
+    // DBSETS (Tablas)
+    // =========================================================
+    public DbSet<FixedAttribute> FixedAttributes { get; set; }
+    public DbSet<VariableAttribute> VariableAttributes { get; set; }
+    public DbSet<StockItem> StockItems { get; set; }
+    public DbSet<ImageGroup> ImageGroups { get; set; }
+    public DbSet<Image> Images { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         // =========================================================
-        // 1. Configuración de PRODUCT
+        // 1. FIXED ATTRIBUTE (PRODUCTO BASE)
         // =========================================================
-        modelBuilder.Entity<Product>(builder =>
+        modelBuilder.Entity<FixedAttribute>(entity =>
         {
-            builder.HasKey(p => p.Id);
+            entity.HasKey(f => f.Id);
 
-            // SKU Único e indexado para búsquedas rápidas
-            builder.HasIndex(p => p.Sku).IsUnique();
-            builder.Property(p => p.Sku).HasMaxLength(50).IsRequired();
+            entity.Property(f => f.Garment).HasConversion<string>().HasMaxLength(50);
+            entity.Property(f => f.Material).HasConversion<string>().HasMaxLength(50);
+            entity.Property(f => f.Neck).HasConversion<string>().HasMaxLength(50);
+            entity.Property(f => f.Fit).HasConversion<string>().HasMaxLength(50);
+            entity.Property(f => f.WarmthLevel).HasConversion<string>().HasMaxLength(50);
+            entity.Property(f => f.WarmthLevel);
 
-            // Precio con precisión monetaria (18 dígitos total, 2 decimales)
-            builder.Property(p => p.Price).HasPrecision(18, 2);
+            entity.HasMany(f => f.VariableAttributes)
+                  .WithOne(v => v.FixedAttribute)
+                  .HasForeignKey(v => v.FixedAttributeId)
+                  .OnDelete(DeleteBehavior.Cascade);
 
-            // Guardar el Tipo de producto como texto (Ej: "TShirt" en vez de 0)
-            builder.Property(p => p.Type).HasConversion<string>();
+            entity.HasIndex(f => new { f.Garment, f.Material, f.Neck, f.Fit })
+                  .IsUnique();
 
-            // Relaciones: Si borras el Producto, se borra todo su contenido
-            builder.HasMany(p => p.Variants)
-                   .WithOne(v => v.Product)
-                   .HasForeignKey(v => v.ProductId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasMany(p => p.ImageGroups)
-                   .WithOne()
-                   .HasForeignKey(g => g.ProductId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Property(p => p.Type).HasConversion<string>();
+            entity.Property(f => f.Price)
+                  .HasColumnType("decimal(18,2)") 
+                  .HasDefaultValue(0)
+                  .IsRequired();
         });
 
         // =========================================================
-        // 2. Configuración de PRODUCT VARIANT
+        // 2. VARIABLE ATTRIBUTE (COLOR)
         // =========================================================
-        modelBuilder.Entity<ProductVariant>(builder =>
+        modelBuilder.Entity<VariableAttribute>(entity =>
         {
-            builder.HasKey(v => v.Id);
+            entity.HasKey(v => v.Id);
 
-            // Conversión de Enums a String para legibilidad en BD
-            builder.Property(v => v.Size).HasConversion<string>();
-            builder.Property(v => v.Color).HasConversion<string>();
-            builder.Property(v => v.Fabric).HasConversion<string>();
-            builder.Property(v => v.NeckType).HasConversion<string>();
-            builder.Property(v => v.Fit).HasConversion<string>();
+            entity.Property(v => v.Color)
+                  .HasConversion<string>()
+                  .HasMaxLength(50);
 
-            builder.HasMany(v => v.Measurements)
-                .WithOne()
-                .HasForeignKey(m => m.ProductVariantId) 
-                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(v => new { v.FixedAttributeId, v.Color })
+                  .IsUnique();
+
+            entity.HasMany(v => v.StockItems)
+                  .WithOne(s => s.VariableAttribute)
+                  .HasForeignKey(s => s.VariableAttributeId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(v => v.ImageGroups)
+                  .WithOne(g => g.VariableAttribute)
+                  .HasForeignKey(g => g.VariableAttributeId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         // =========================================================
-        // 3. Configuración de PRODUCT IMAGE GROUP (El modelo)
+        // 3. STOCK ITEM (SIZE + CANTIDAD)
         // =========================================================
-        modelBuilder.Entity<ProductImageGroup>(builder =>
+        modelBuilder.Entity<StockItem>(entity =>
         {
-            builder.HasKey(g => g.Id);
+            entity.HasKey(s => s.Id);
 
-            // Talle que usa el modelo (Enum -> String)
-            builder.Property(g => g.ModelWearingSize).HasConversion<string>();
+            entity.Property(s => s.Size)
+                  .HasConversion<string>()
+                  .HasMaxLength(20);
 
-            // Relación con sus imágenes internas
-            builder.HasMany(g => g.Images)
-                   .WithOne()
-                   .HasForeignKey(i => i.ProductImageGroupId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(s => new { s.VariableAttributeId, s.Size })
+                  .IsUnique();
         });
 
         // =========================================================
-        // 4. Configuración de PRODUCT IMAGE (La foto real)
+        // 4. IMAGE GROUP
         // =========================================================
-        modelBuilder.Entity<ProductImage>(builder =>
+        modelBuilder.Entity<ImageGroup>(entity =>
         {
-            builder.HasKey(i => i.Id);
-            builder.Property(i => i.ImageUrl).IsRequired();
+            entity.HasKey(g => g.Id);
+
+            entity.Property(g => g.ModelWearingSize)
+                  .HasConversion<string>()
+                  .HasMaxLength(20);
+
+            entity.HasMany(g => g.Images)
+                  .WithOne(i => i.ImageGroup)
+                  .HasForeignKey(i => i.ImageGroupId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         // =========================================================
-        // 5. Configuración de PRODUCT MEASUREMENT (Tabla de talles)
+        // 5. IMAGE
         // =========================================================
-        modelBuilder.Entity<ProductMeasurement>(builder =>
+        modelBuilder.Entity<Image>(entity =>
         {
-            builder.HasKey(m => m.Id);
+            entity.HasKey(i => i.Id);
 
-            builder.Property(m => m.MeasurementName)
-                   .HasMaxLength(100)
-                   .IsRequired();
+            entity.Property(i => i.ImageUrl)
+                  .IsRequired()
+                  .HasMaxLength(1000);
 
-            // Valor numérico (Ej: 52.50)
-            builder.Property(m => m.Value).HasPrecision(10, 2);
-
-            // Talle asociado (Enum -> String)
-            builder.Property(m => m.Size).HasConversion<string>();
+            entity.Property(i => i.IsMain)
+                  .HasDefaultValue(false);
         });
     }
 }
